@@ -23,6 +23,16 @@ on:
         default: 'Automated PR'
         type: string
         required: false
+      assignee:
+        description: 'Assignee'
+        default: 'scherersebastian'
+        type: string
+        required: false
+      reviewer:
+        description: 'Reviewer'
+        default: 'scherersebastian'
+        type: string
+        required: false
 
 jobs:
   create-pr:
@@ -57,4 +67,10 @@ jobs:
     - name: Create PR
       run: |
         echo "${{ secrets.OTHER_REPO_ACCESS_TOKEN }}" | gh auth login --with-token
-        gh pr create --repo ${{ github.event.inputs.targetRepo }} --base ${{ github.event.inputs.targetBranch }} --head $BRANCH_NAME --title "${{ github.event.inputs.prTitle }}" --body "${{ github.event.inputs.prBody }}"
+        gh pr create --repo ${{ github.event.inputs.targetRepo }} \
+                     --base ${{ github.event.inputs.targetBranch }} \
+                     --head $BRANCH_NAME \
+                     --title "${{ github.event.inputs.prTitle }}" \
+                     --body "${{ github.event.inputs.prBody }}" \
+                     --assignee "${{ github.event.inputs.assignee }}" \
+                     --reviewer "${{ github.event.inputs.reviewer }}"
