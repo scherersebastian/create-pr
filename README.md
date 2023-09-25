@@ -1,6 +1,6 @@
 # create-pr
 
-Example workflow:
+Example workflow - create PR in "own" repo:
 
 ```yaml
 name: Erstellen Sie einen Pull Request und ändern Sie die SECURITY.md
