@@ -1,0 +1,58 @@
+name: Create PR in Another Repository
+
+on:
+  workflow_dispatch:
+    inputs:
+      targetRepo:
+        description: 'Target Repository (e.g., owner/repo)'
+        default: 'scherersebastian/item-relationship-service'
+        required: false
+        type: string
+      targetBranch:
+        description: 'Target Branch for PR (e.g., main)'
+        required: false
+        type: string
+        default: main
+      prTitle:
+        description: 'Title for the PR'
+        required: false
+        type: string
+        default: 'chore: example PR title'
+      prBody:
+        description: 'Body for the PR'
+        default: 'Automated PR'
+        type: string
+        required: false
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout target repo
+      uses: actions/checkout@v2
+      with:
+        repository: ${{ github.event.inputs.targetRepo }}
+        token: ${{ secrets.OTHER_REPO_ACCESS_TOKEN }}
+        ref: ${{ github.event.inputs.targetBranch }}
+
+    - name: Create new branch for changes
+      run: |
+        git checkout -b automated-update-branch
+
+    - name: Make changes
+      run: |
+        echo "Updated Security Policy" > SECURITY.md
+        git config --global user.email "you@example.com"
+        git config --global user.name "Your Name"
+        git add SECURITY.md
+        git commit -m "Update SECURITY.md"
+
+    - name: Push changes
+      run: |
+        git push -u origin automated-update-branch
+
+    - name: Create PR
+      run: |
+        echo "${{ secrets.OTHER_REPO_ACCESS_TOKEN }}" | gh auth login --with-token
+        gh pr create --repo ${{ github.event.inputs.targetRepo }} --base ${{ github.event.inputs.targetBranch }} --head automated-update-branch --title "${{ github.event.inputs.prTitle }}" --body "${{ github.event.inputs.prBody }}"
