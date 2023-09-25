@@ -38,7 +38,7 @@ jobs:
 
     - name: Create new branch for changes
       run: |
-        git checkout -b automated-update-branch
+        git checkout -b automated-update-$(date +'%Y%m%d%H%M%S')
 
     - name: Make changes
       run: |
