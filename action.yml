@@ -1,0 +1,23 @@
+name: "Einfacher PR Ersteller"
+description: "Erstellt einen Pull Request"
+inputs:
+  base:
+    description: 'Basisbranch für den Pull Request'
+    required: true
+    default: 'main'
+  head:
+    description: 'Kopfbranch für den Pull Request'
+    required: true
+  title:
+    description: 'Titel des Pull Requests'
+    required: true
+    default: 'Automatisch erstellter PR'
+  body:
+    description: 'Inhalt des Pull Requests'
+    required: true
+    default: 'Dies ist ein durch GitHub Action automatisch erstellter PR.'
+runs:
+  using: "composite"
+  steps:
+    - run: ${{ github.action_path }}/create-pr.sh
+      shell: bash
