@@ -30,7 +30,7 @@ jobs:
 
     steps:
     - name: Checkout target repo
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: ${{ github.event.inputs.targetRepo }}
         token: ${{ secrets.OTHER_REPO_ACCESS_TOKEN }}
@@ -38,7 +38,9 @@ jobs:
 
     - name: Create new branch for changes
       run: |
-        git checkout -b automated-update-$(date +'%Y%m%d%H%M%S')
+        BRANCH_NAME=automated-update-$(date +'%Y%m%d%H%M%S')
+        git checkout -b $BRANCH_NAME
+        echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
 
     - name: Make changes
       run: |
@@ -50,9 +52,9 @@ jobs:
 
     - name: Push changes
       run: |
-        git push -u origin automated-update-branch
+        git push -u origin $BRANCH_NAME
 
     - name: Create PR
       run: |
         echo "${{ secrets.OTHER_REPO_ACCESS_TOKEN }}" | gh auth login --with-token
-        gh pr create --repo ${{ github.event.inputs.targetRepo }} --base ${{ github.event.inputs.targetBranch }} --head automated-update-branch --title "${{ github.event.inputs.prTitle }}" --body "${{ github.event.inputs.prBody }}"
+        gh pr create --repo ${{ github.event.inputs.targetRepo }} --base ${{ github.event.inputs.targetBranch }} --head $BRANCH_NAME --title "${{ github.event.inputs.prTitle }}" --body "${{ github.event.inputs.prBody }}"
